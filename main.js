@@ -955,6 +955,42 @@ async function main() {
         activeKeys = [];
     });
 
+    function axisAngleToQuaternion(axis, angle) {
+        let s = Math.sin(angle / 2);
+        return [
+            axis[0] * s,
+            axis[1] * s,
+            axis[2] * s,
+            Math.cos(angle / 2)
+        ];
+    }
+    
+    function multiplyQuaternions(a, b) {
+        return [
+            a[3] * b[0] + a[0] * b[3] + a[1] * b[2] - a[2] * b[1],
+            a[3] * b[1] - a[0] * b[2] + a[1] * b[3] + a[2] * b[0],
+            a[3] * b[2] + a[0] * b[1] - a[1] * b[0] + a[2] * b[3],
+            a[3] * b[3] - a[0] * b[0] - a[1] * b[1] - a[2] * b[2]
+        ];
+    }
+    
+    function rotateMatrixQuaternion(m, q) {
+        let x = q[0], y = q[1], z = q[2], w = q[3];
+        let x2 = x + x, y2 = y + y, z2 = z + z;
+        let xx = x * x2, xy = x * y2, xz = x * z2;
+        let yy = y * y2, yz = y * z2, zz = z * z2;
+        let wx = w * x2, wy = w * y2, wz = w * z2;
+    
+        let r = [
+            1 - (yy + zz), xy - wz, xz + wy, 0,
+            xy + wz, 1 - (xx + zz), yz - wx, 0,
+            xz - wy, yz + wx, 1 - (xx + yy), 0,
+            0, 0, 0, 1
+        ];
+    
+        return multiply4(m, r);
+    }
+
     window.addEventListener(
         "wheel",
         (e) => {
@@ -1018,20 +1054,31 @@ async function main() {
     canvas.addEventListener("mousemove", (e) => {
         e.preventDefault();
         if (down == 1) {
+
             let inv = invert4(viewMatrix);
             let dx = (5 * (e.clientX - startX)) / innerWidth;
             let dy = (5 * (e.clientY - startY)) / innerHeight;
             let d = 4;
-
+        
+            //Extract the third column of the viewMatrix, which is the up axis of the camera
+            let up_x = viewMatrix[4];
+            let up_y = viewMatrix[5];
+            let up_z = viewMatrix[6];
+        
+            let len = Math.hypot(up_x,up_y,up_z);
+            up_x /= len;
+            up_y /= len;
+            up_z /= len;
+        
             inv = translate4(inv, 0, 0, d);
-            inv = rotate4(inv, dx, 0, 1, 0);
+            // inv = rotate4(inv, dx, 0, 1, 0);
+            //Rotate around the camera's up axis
+            inv = rotate4(inv, dx, up_x, up_y, up_z);
             inv = rotate4(inv, -dy, 1, 0, 0);
             inv = translate4(inv, 0, 0, -d);
-            // let postAngle = Math.atan2(inv[0], inv[10])
-            // inv = rotate4(inv, postAngle - preAngle, 0, 0, 1)
-            // console.log(postAngle)
+        
             viewMatrix = invert4(inv);
-
+        
             startX = e.clientX;
             startY = e.clientY;
         } else if (down == 2) {

@@ -605,23 +605,36 @@ async function main() {
   canvas.addEventListener("mousemove", (e) => {
     e.preventDefault();
     if (down == 1) {
+
       let inv = invert4(viewMatrix);
       let dx = (5 * (e.clientX - startX)) / innerWidth;
       let dy = (5 * (e.clientY - startY)) / innerHeight;
       let d = 4;
-
+  
+      //Extract the third column of the viewMatrix, which is the up axis of the camera
+      let up_x = viewMatrix[4];
+      let up_y = viewMatrix[5];
+      let up_z = viewMatrix[6];
+  
+      let len = Math.hypot(up_x,up_y,up_z);
+      up_x /= len;
+      up_y /= len;
+      up_z /= len;
+  
       inv = translate4(inv, 0, 0, d);
-      inv = rotate4(inv, dx, 0, 1, 0);
+      // inv = rotate4(inv, dx, 0, 1, 0);
+      //Rotate around the camera's up axis
+      inv = rotate4(inv, dx, up_x, up_y, up_z);
       inv = rotate4(inv, -dy, 1, 0, 0);
       inv = translate4(inv, 0, 0, -d);
-      // let postAngle = Math.atan2(inv[0], inv[10])
-      // inv = rotate4(inv, postAngle - preAngle, 0, 0, 1)
-      // console.log(postAngle)
+  
       viewMatrix = invert4(inv);
-
+  
       startX = e.clientX;
       startY = e.clientY;
-    } else if (down == 2) {
+  }
+    
+    else if (down == 2) {
       let inv = invert4(viewMatrix);
       // inv = rotateY(inv, );
       // let preY = inv[13];
