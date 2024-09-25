@@ -1023,11 +1023,7 @@ async function main() {
                 );
                 // inv[13] = preY;
             } else {
-                let d = 4;
-                inv = translate4(inv, 0, 0, d);
-                inv = rotate4(inv, -(e.deltaX * scale) / innerWidth, 0, 1, 0);
-                inv = rotate4(inv, (e.deltaY * scale) / innerHeight, 1, 0, 0);
-                inv = translate4(inv, 0, 0, -d);
+                inv = translate4(inv, 0, 0, -e.deltaY * scale*0.002);
             }
 
             viewMatrix = invert4(inv);
@@ -1041,14 +1037,14 @@ async function main() {
         e.preventDefault();
         startX = e.clientX;
         startY = e.clientY;
-        down = e.ctrlKey || e.metaKey ? 2 : 1;
+        down = e.button === 0 ? 1 : (e.button === 2 ? 2 : false); // 0 for left, 2 for right
     });
     canvas.addEventListener("contextmenu", (e) => {
         carousel = false;
         e.preventDefault();
         startX = e.clientX;
         startY = e.clientY;
-        down = 2;
+        //down = 2;
     });
 
     canvas.addEventListener("mousemove", (e) => {
@@ -1081,21 +1077,30 @@ async function main() {
         
             startX = e.clientX;
             startY = e.clientY;
+
         } else if (down == 2) {
+
             let inv = invert4(viewMatrix);
-            // inv = rotateY(inv, );
-            // let preY = inv[13];
-            inv = translate4(
-                inv,
-                (-10 * (e.clientX - startX)) / innerWidth,
-                0,
-                (10 * (e.clientY - startY)) / innerHeight,
-            );
-            // inv[13] = preY;
+            let dx = (e.clientX - startX) / innerWidth;
+            let dz = (e.clientY - startY) / innerHeight;
+            
+            //let x_axis = viewMatrix[0];
+            //let y_axis = viewMatrix[1];
+           // let z_axis = viewMatrix[2];
+
+           // let len = Math.hypot(x_axis,y_axis,z_axis);
+          //  x_axis /= len;
+           // y_axis /= len;
+            //z_axis /= len;
+
+            inv = translate4(inv, -dx, -dz, 0);
+
             viewMatrix = invert4(inv);
 
             startX = e.clientX;
             startY = e.clientY;
+
+
         }
     });
     canvas.addEventListener("mouseup", (e) => {

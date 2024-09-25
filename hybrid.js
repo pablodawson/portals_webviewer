@@ -573,11 +573,7 @@ async function main() {
         inv = translate4(inv, 0, 0, (-10 * (e.deltaY * scale)) / innerHeight);
         // inv[13] = preY;
       } else {
-        let d = 4;
-        inv = translate4(inv, 0, 0, d);
-        inv = rotate4(inv, -(e.deltaX * scale) / innerWidth, 0, 1, 0);
-        inv = rotate4(inv, (e.deltaY * scale) / innerHeight, 1, 0, 0);
-        inv = translate4(inv, 0, 0, -d);
+        inv = translate4(inv, 0, 0, e.deltaY * scale*0.2);
       }
 
       viewMatrix = invert4(inv);
@@ -591,7 +587,7 @@ async function main() {
     e.preventDefault();
     startX = e.clientX;
     startY = e.clientY;
-    down = e.ctrlKey || e.metaKey ? 2 : 1;
+    down = e.button === 0 ? 1 : (e.button === 2 ? 2 : false);
   });
   canvas.addEventListener("contextmenu", (e) => {
     // console.log("contextmenu?");
@@ -606,46 +602,48 @@ async function main() {
     e.preventDefault();
     if (down == 1) {
 
-      let inv = invert4(viewMatrix);
-      let dx = (5 * (e.clientX - startX)) / innerWidth;
-      let dy = (5 * (e.clientY - startY)) / innerHeight;
-      let d = 4;
-  
-      //Extract the third column of the viewMatrix, which is the up axis of the camera
-      let up_x = viewMatrix[4];
-      let up_y = viewMatrix[5];
-      let up_z = viewMatrix[6];
-  
-      let len = Math.hypot(up_x,up_y,up_z);
-      up_x /= len;
-      up_y /= len;
-      up_z /= len;
-  
-      inv = translate4(inv, 0, 0, d);
-      // inv = rotate4(inv, dx, 0, 1, 0);
-      //Rotate around the camera's up axis
-      inv = rotate4(inv, dx, up_x, up_y, up_z);
-      inv = rotate4(inv, -dy, 1, 0, 0);
-      inv = translate4(inv, 0, 0, -d);
-  
-      viewMatrix = invert4(inv);
-  
-      startX = e.clientX;
-      startY = e.clientY;
-  }
+        let inv = invert4(viewMatrix);
+        let dx = (5 * (e.clientX - startX)) / innerWidth;
+        let dy = (5 * (e.clientY - startY)) / innerHeight;
+        let d = 4;
     
-    else if (down == 2) {
-      let inv = invert4(viewMatrix);
-      // inv = rotateY(inv, );
-      // let preY = inv[13];
-      inv = translate4(inv, (-10 * (e.clientX - startX)) / innerWidth, 0, (10 * (e.clientY - startY)) / innerHeight);
-      // inv[13] = preY;
-      viewMatrix = invert4(inv);
+        //Extract the third column of the viewMatrix, which is the up axis of the camera
+        let up_x = viewMatrix[4];
+        let up_y = viewMatrix[5];
+        let up_z = viewMatrix[6];
+    
+        let len = Math.hypot(up_x,up_y,up_z);
+        up_x /= len;
+        up_y /= len;
+        up_z /= len;
+    
+        inv = translate4(inv, 0, 0, d);
+        // inv = rotate4(inv, dx, 0, 1, 0);
+        //Rotate around the camera's up axis
+        inv = rotate4(inv, dx, up_x, up_y, up_z);
+        inv = rotate4(inv, -dy, 1, 0, 0);
+        inv = translate4(inv, 0, 0, -d);
+    
+        viewMatrix = invert4(inv);
+    
+        startX = e.clientX;
+        startY = e.clientY;
 
-      startX = e.clientX;
-      startY = e.clientY;
+    } else if (down == 2) {
+
+        let inv = invert4(viewMatrix);
+        let dx = (e.clientX - startX) / innerWidth;
+        let dz = (e.clientY - startY) / innerHeight;
+        
+        inv = translate4(inv, -dx, -dz, 0);
+
+        viewMatrix = invert4(inv);
+
+        startX = e.clientX;
+        startY = e.clientY;
+
     }
-  });
+});
   canvas.addEventListener("mouseup", (e) => {
     e.preventDefault();
     down = false;
