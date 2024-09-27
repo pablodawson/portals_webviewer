@@ -573,7 +573,7 @@ async function main() {
         inv = translate4(inv, 0, 0, (-10 * (e.deltaY * scale)) / innerHeight);
         // inv[13] = preY;
       } else {
-        inv = translate4(inv, 0, 0, e.deltaY * scale*0.002);
+        inv = translate4(inv, 0, 0, -e.deltaY * scale*0.002);
       }
 
       viewMatrix = invert4(inv);
@@ -635,7 +635,7 @@ async function main() {
         let dx = (e.clientX - startX) / innerWidth;
         let dz = (e.clientY - startY) / innerHeight;
         
-        inv = translate4(inv, -dx, -dz, 0);
+        inv = translate4(inv, -dx*1.5, -dz*1.5, 0);
 
         viewMatrix = invert4(inv);
 

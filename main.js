@@ -1093,7 +1093,7 @@ async function main() {
            // y_axis /= len;
             //z_axis /= len;
 
-            inv = translate4(inv, -dx, -dz, 0);
+            inv = translate4(inv, -dx*1.5, -dz*1.5, 0);
 
             viewMatrix = invert4(inv);
 
