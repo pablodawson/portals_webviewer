@@ -7,6 +7,14 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <style>
+      @font-face {
+        font-family: 'Univers';
+        src: url('path-to-your-univers-font-file.woff2') format('woff2'),
+             url('path-to-your-univers-font-file.woff') format('woff');
+        font-weight: normal;
+        font-style: normal;
+      }
+
       body {
         overflow: hidden;
         margin: 0;
@@ -34,64 +42,51 @@
         font-size: small;
       }
 
-      .cube-wrapper {
-        transform-style: preserve-3d;
+      .logo-wrapper {
+        perspective: 1000px;
       }
 
-      .cube {
-        transform-style: preserve-3d;
-        transform: rotateX(45deg) rotateZ(45deg);
-        animation: rotation 2s infinite;
-      }
-
-      .cube-faces {
-        transform-style: preserve-3d;
-        height: 80px;
-        width: 80px;
+      .logo {
         position: relative;
-        transform-origin: 0 0;
-        transform: translateX(0) translateY(0) translateZ(-40px);
+        width: 100px;
+        height: 100px;
+        transform-style: preserve-3d;
+        animation: gentle-rotate 2s ease-in-out infinite;
       }
 
-      .cube-face {
+      .logo-letter {
         position: absolute;
-        inset: 0;
-        background: #0017ff;
-        border: solid 1px #ffffff;
-      }
-      .cube-face.top {
-        transform: translateZ(80px);
-      }
-      .cube-face.front {
-        transform-origin: 0 50%;
-        transform: rotateY(-90deg);
-      }
-      .cube-face.back {
-        transform-origin: 0 50%;
-        transform: rotateY(-90deg) translateZ(-80px);
-      }
-      .cube-face.right {
-        transform-origin: 50% 0;
-        transform: rotateX(-90deg) translateY(-80px);
-      }
-      .cube-face.left {
-        transform-origin: 50% 0;
-        transform: rotateX(-90deg) translateY(-80px) translateZ(80px);
+        width: 100px;
+        height: 100px;
+        font-family: 'Univers', sans-serif;
+        font-size: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-style: italic;
+        font-weight: 550;
       }
 
-      @keyframes rotation {
-        0% {
-          transform: rotateX(45deg) rotateY(0) rotateZ(45deg);
-          animation-timing-function: cubic-bezier(0.17, 0.84, 0.44, 1);
-        }
-        50% {
-          transform: rotateX(45deg) rotateY(0) rotateZ(225deg);
-          animation-timing-function: cubic-bezier(0.76, 0.05, 0.86, 0.06);
-        }
-        100% {
-          transform: rotateX(45deg) rotateY(0) rotateZ(405deg);
-          animation-timing-function: cubic-bezier(0.17, 0.84, 0.44, 1);
-        }
+      .logo-letter:nth-child(1) {
+        color: red;
+        transform: translateZ(20px) translateX(-7px) translateY(-7px);
+      }
+
+      .logo-letter:nth-child(3) {
+        color: rgb(0, 255, 0);
+      }
+
+      .logo-letter:nth-child(2) {
+        color: blue;
+        transform: translateZ(-20px) translateX(7px) translateY(7px);
+      }
+
+      
+
+      @keyframes gentle-rotate {
+        0%, 100% { transform: rotateY(0deg) rotateX(0deg); }
+        50% { transform: rotateY(-20deg)}
       }
 
       .scene,
@@ -162,7 +157,7 @@
         display: none;
       }
       body.nohf #progress,
-      body.nohf .cube-face {
+      body.nohf .logo-letter {
         background: #ff9d0d;
       }
 
@@ -185,16 +180,11 @@
 
     <div id="message"></div>
     <div class="scene" id="spinner">
-      <div class="cube-wrapper">
-        <div class="cube">
-          <div class="cube-faces">
-            <div class="cube-face bottom"></div>
-            <div class="cube-face top"></div>
-            <div class="cube-face left"></div>
-            <div class="cube-face right"></div>
-            <div class="cube-face back"></div>
-            <div class="cube-face front"></div>
-          </div>
+      <div class="logo-wrapper">
+        <div class="logo">
+          <div class="logo-letter">O</div>
+          <div class="logo-letter">O</div>
+          <div class="logo-letter">O</div>
         </div>
       </div>
     </div>
@@ -206,7 +196,6 @@
     <div id="caminfo">
       <span id="camid"></span>
     </div>
-
     <script src="hybrid.js"></script>
   </body>
 </html>
